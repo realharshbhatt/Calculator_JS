@@ -1,117 +1,129 @@
+
+
 var buttons = document.querySelectorAll(".calc-button");
 var displayTopRow = document.querySelector("textarea");
 var displayBottomRow = document.querySelector(".calc-display__digits-bottom");
+
 
 displayTopRow.value = "0";
 displayBottomRow.value = "";
 var buttonVal = "";
 var digits = "";
-var result = "";
+var result = 0;
 var reset = false;
 var decimal = false;
+
+
 var i;
 var buttonsLength = buttons.length;
+console.log(buttonsLength);
 
 // listening for a button click
-for(i = 0; i < buttonsLength; i++){
+for (i = 0; i < buttonsLength; i++) {
   var clickedBtn = buttons[i];
 
-      clickedBtn.addEventListener("click", function(e){
-          buttonVal = e.target.dataset.button;
-          if(buttonVal == "C"){
-            resetValues();
-          }else if(buttonVal == "step-back"){
-            removeOneDigit();
-          }else if(reset){
-            resetValues();
-          }else{
-            displayDigits(e);
-          }
-      });
+  clickedBtn.addEventListener("click", function (e) {
+    buttonVal = e.target.dataset.button;
+    console.log(buttonVal)
+    if (buttonVal == "C") {
+      resetValues();
+    } else if (buttonVal == "step-back") {
+      removeOneDigit();
+    } else if (reset) {
+      resetValues();
+    } else {
+      displayDigits(e);
+    }
+  });
 }
 
-  // one step back
-    function removeOneDigit(e){
-      digits = digits.slice(0, -1);
-      displayTopRow.value = digits;
+// one step back
+function removeOneDigit(e) {
+  digits = digits.slice(0, -1);
+  displayTopRow.value = digits;
 
-        if(digits.length === 0){
-          displayTopRow.value = "0";
-          displayBottomRow.value = "";
-        }
-    }
-
-  // reset all values and clear display
-  function resetValues(e){
-    digits = "";
+  if (digits.length === 0) {
     displayTopRow.value = "0";
     displayBottomRow.value = "";
-    reset = false;
-    decimal = false;
   }
+}
 
-   // display digits
-   function displayDigits(e){
-     buttonVal = e.target.dataset.key;
-     var operator = e.target.dataset.operator;
-     var lastChar = digits.charAt(digits.length -1);
+// reset all values and clear display
+function resetValues(e) {
+  digits = "";
+  displayTopRow.value = "0";
+  displayBottomRow.value = "";
+  reset = false;
+  decimal = false;
+}
 
-     // add new values to string
-       if(buttonVal && digits.length < 38){
-         if(buttonVal !== "."){
-           digits += buttonVal;
-              // display message when crossing the limit of digits
-            if(digits.length >= 38){
-              displayBottomRow.style.fontSize = "0.8em";
-              displayBottomRow.value = "Maximum number is reached";
-            }
-            displayTopRow.value = digits;
-          }else if(digits !== "" && buttonVal == "."){
-            // check string for dots
-            if(!decimal){
-              digits += buttonVal;
-              displayTopRow.value = digits;
-              decimal = true;
-            }
-          }
-        }
-        if(operator == "+" ||
-           operator == "-" ||
-           operator == "*" ||
-           operator == "/"
-          ){
-            decimal = false;
+// display digits
+function displayDigits(e) {
+  buttonVal = e.target.dataset.key;
+  console.log(buttonVal);
+  var operator = e.target.dataset.operator;
+  console.log(operator)
+  var lastChar = digits.charAt(digits.length - 1);
 
-            // don't allow operators to start a string
-            if(digits !== ""){
-              digits += operator;
-              displayTopRow.value = digits;
-            }
+  // add new values to string
+  if (buttonVal && digits.length < 38) {
+    if (buttonVal !== ".") {
+      digits += buttonVal;
+      // display message when crossing the limit of digits
+      if (digits.length >= 38) {
+        displayBottomRow.style.fontSize = "0.8em";
+        displayBottomRow.value = "Maximum number is reached";
+      }
+      displayTopRow.value = digits;
+    } else if (digits !== "" && buttonVal == ".") {
+      // check string for dots
+      if (!decimal) {
+        digits += buttonVal;
+        displayTopRow.value = digits;
+        decimal = true;
+      }
+    }
+  }
+  if (operator == "+" ||
+    operator == "-" ||
+    operator == "*" ||
+    operator == "/"
+  ) {
+    // decimal = false;
 
-            // don't allow operators to chain
-            if(lastChar == "+" || lastChar == "*" || lastChar == "/" || lastChar == "-"){
-              digits = digits.slice(0, -1);
-              displayTopRow.value = digits;
-            }
+    // don't allow operators to start a string
+    if (digits !== "") {
+      digits += operator;
+      displayTopRow.value = digits;
+    }
 
-            // allow minus in to start a string
-            if(digits == "" && operator == "-"){
-              digits += operator;
-              displayTopRow.value = digits;
-            }
-        // display result
-        }else if(operator == "="){
-          result = eval(digits);
-          displayBottomRow.style.fontSize = "1.4em";
+    // don't allow operators to chain
+    if (lastChar == "+" || lastChar == "*" || lastChar == "/" || lastChar == "-") {
+      digits = digits.slice(0, -1);
+      displayTopRow.value = digits;
+    }
 
-            if(result % 1 != 0 || decimal == true){
-              var round = result.toFixed(2);
-              displayBottomRow.value = "=" + round;
-            }else{
-              displayBottomRow.value = "=" + result;
-            }
-          reset = true;
-          decimal = true;
-        }
+    // allow minus in to start a string
+    if (digits == "" && operator == "-") {
+      digits += operator;
+      displayTopRow.value = digits;
+    }
+    // display result
+  } else if (operator == "=") {
+    console.log("its pressed");
+    result = eval(digits);
+    console.log(result)
+    displayBottomRow.style.fontSize = "1.4em";
+
+    if (decimal == true) {
+      var round = result.toFixed(2);
+      console.log(round);
+      displayBottomRow.value = "=" + round;
+    } else {
+      displayBottomRow.value = "=" + result;
+    }
+    // reset = true;
+    // decimal = true;
+  }
 
 }
